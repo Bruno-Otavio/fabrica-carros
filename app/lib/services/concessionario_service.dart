@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class ConcessionarioService {
   static Future<List<Concessionaria>> getConcessionariasByAreaAndAutomovel(
     int area,
-    int automovel,
+    String automovel,
   ) async {
     final response = await http
         .get(Uri.parse('$apiUrl/alocacao?area=$area&automovel=$automovel'));
@@ -15,16 +15,23 @@ class ConcessionarioService {
     if (response.statusCode == 200) {
       final List body = jsonDecode(response.body);
 
+      final List concessionarias = [];
       for (Map alocacao in body) {
         final response = await http.get(
-          Uri.parse('$apiUrl/concessionaria/${alocacao['concessionaria']}'),
+          Uri.parse('$apiUrl/concessionarias/${alocacao['concessionaria']}'),
         );
 
         if (response.statusCode != 200) {
           throw Exception('Could not fetch concessionarias.');
         }
 
-        alocacao['concessionaria'] = jsonDecode(response.body);
+        final bodyConcessionaria = jsonDecode(response.body);
+
+        for (final conc in concessionarias) {
+          if (conc['nome'] != bodyConcessionaria['nome']) {
+            concessionarias.add(bodyConcessionaria);
+          }
+        }
       }
 
       return body.map((e) => Concessionaria.fromJson(e['concessionaria'])).toList();

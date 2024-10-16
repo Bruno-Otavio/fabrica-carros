@@ -48,7 +48,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   final Alocacao alocacao = data[index];
                   final Automovel automovel = alocacao.automovel;
 
-                  return AutomovelWidget(automovel: automovel);
+                  return AutomovelWidget(automovel: automovel, area: widget.area,);
                 },
               );
             } else if (snapshot.hasError) {

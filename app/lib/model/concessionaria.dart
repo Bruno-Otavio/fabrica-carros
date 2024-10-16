@@ -4,13 +4,13 @@ class Concessionaria {
     required this.nome,
   });
 
-  final int id;
+  final String id;
   final String nome;
 
   factory Concessionaria.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'id': int id,
+        'id': String id,
         'concessionaria': String nome,
       } =>
         Concessionaria(id: id, nome: nome),

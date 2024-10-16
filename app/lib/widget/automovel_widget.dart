@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 class AutomovelWidget extends StatelessWidget {
   const AutomovelWidget({
     super.key,
+    required this.area,
     required this.automovel,
   });
 
+  final int area;
   final Automovel automovel;
 
   @override
@@ -45,7 +47,12 @@ class AutomovelWidget extends StatelessWidget {
           Button(
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const VendasScreen()),
+                MaterialPageRoute(
+                  builder: (context) => VendasScreen(
+                    automovel: automovel,
+                    area: area,
+                  ),
+                ),
               );
             },
             text: 'Vender',
