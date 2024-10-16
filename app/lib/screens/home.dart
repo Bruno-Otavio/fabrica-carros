@@ -31,38 +31,57 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final List areas = snapshot.data!;
-            return CarouselSlider(
-              items: _areasList.map((e) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const DetailsScreen(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    color: areas.contains(e)
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.tertiary,
-                    child: Center(
-                      child: Text(
-                        e.toString(),
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+            return Center(
+              child: CarouselSlider(
+                items: _areasList.map((e) {
+                  return GestureDetector(
+                    onTap: () {
+                      if (areas.contains(e)) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => DetailsScreen(
+                              area: e,
+                            ),
+                          ),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const AlertDialog(
+                              title: Text('Atenção'),
+                              content: Text(
+                                'Essa área não possui veículos.',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      color: areas.contains(e)
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.tertiary,
+                      child: Center(
+                        child: Text(
+                          e.toString(),
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              }).toList(),
-              options: CarouselOptions(
-                height: 500,
-                aspectRatio: 16 / 9,
-                enlargeCenterPage: true,
+                  );
+                }).toList(),
+                options: CarouselOptions(
+                  height: 500,
+                  aspectRatio: 16 / 9,
+                  enlargeCenterPage: true,
+                ),
               ),
             );
           } else if (snapshot.hasError) {
