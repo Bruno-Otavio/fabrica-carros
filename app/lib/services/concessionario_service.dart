@@ -27,14 +27,16 @@ class ConcessionarioService {
 
         final bodyConcessionaria = jsonDecode(response.body);
 
-        for (final conc in concessionarias) {
-          if (conc['nome'] != bodyConcessionaria['nome']) {
-            concessionarias.add(bodyConcessionaria);
-          }
+        if (concessionarias
+            .where((e) => e['id'] == bodyConcessionaria['id'])
+            .isEmpty) {
+          concessionarias.add(bodyConcessionaria);
         }
       }
 
-      return body.map((e) => Concessionaria.fromJson(e['concessionaria'])).toList();
+      return concessionarias
+          .map((e) => Concessionaria.fromJson(e))
+          .toList();
     } else {
       throw Exception('Could not fetch concessionarias.');
     }

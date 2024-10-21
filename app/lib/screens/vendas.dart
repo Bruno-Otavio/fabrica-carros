@@ -1,6 +1,8 @@
 import 'package:fabrica_carros/model/automovel.dart';
+import 'package:fabrica_carros/screens/home.dart';
 import 'package:fabrica_carros/services/cliente_service.dart';
 import 'package:fabrica_carros/services/concessionario_service.dart';
+import 'package:fabrica_carros/widget/button.dart';
 import 'package:flutter/material.dart';
 
 class VendasScreen extends StatefulWidget {
@@ -19,6 +21,8 @@ class VendasScreen extends StatefulWidget {
 
 class _VendasScreenState extends State<VendasScreen> {
   late Future _futureVendas;
+
+  final _formKey = GlobalKey<FormState>();
 
   Future _getVendas() async {
     return <String, dynamic>{
@@ -47,54 +51,167 @@ class _VendasScreenState extends State<VendasScreen> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: FutureBuilder(
-        future: _futureVendas,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final data = snapshot.data!;
-            final List clientes = data['clientes'];
-            final List concessionarias = data['concessionarias'];
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: FutureBuilder(
+          future: _futureVendas,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final data = snapshot.data!;
+              final List clientes = data['clientes'];
+              final List concessionarias = data['concessionarias'];
 
-            String dropDownValueClientes = clientes.first.nome;
-            String dropDownValueConcessionarias = concessionarias.first.nome;
+              final itemsClientes = clientes.map<DropdownMenuItem<String>>((e) {
+                return DropdownMenuItem(value: e.nome, child: Text(e.nome));
+              }).toList();
+              itemsClientes.insert(
+                0,
+                const DropdownMenuItem(
+                  value: 'Selecionar',
+                  child: Text('Selecionar'),
+                ),
+              );
 
-            return Form(
-              child: Column(
-                children: [
-                  DropdownButtonFormField(
-                    validator: (value) => null,
-                    value: dropDownValueClientes,
-                    items: clientes.map<DropdownMenuItem<String>>((e) {
-                      return DropdownMenuItem(value: e.nome, child: Text(e.nome));
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        dropDownValueClientes = value!;
-                      });
-                    },
-                  ),
-                  DropdownButtonFormField(
-                    validator: (value) => null,
-                    value: dropDownValueConcessionarias,
-                    items: concessionarias.map<DropdownMenuItem<String>>((e) {
-                      return DropdownMenuItem(value: e.nome, child: Text(e.nome));
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        dropDownValueConcessionarias = value!;
-                      });
-                    },
-                  ),
-                ],
-              ),
+              final itemsConcessionaria =
+                  concessionarias.map<DropdownMenuItem<String>>((e) {
+                return DropdownMenuItem(value: e.nome, child: Text(e.nome));
+              }).toList();
+              itemsConcessionaria.insert(
+                0,
+                const DropdownMenuItem(
+                  value: 'Selecionar',
+                  child: Text('Selecionar'),
+                ),
+              );
+
+              String dropDownValueClientes = itemsClientes.first.value!;
+              String dropDownValueConcessionarias =
+                  itemsConcessionaria.first.value!;
+
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 3),
+                            child: Text(
+                              'Cliente',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          DropdownButtonFormField(
+                            validator: (value) {
+                              if (value == 'Selecionar') {
+                                return 'Por favor, selecione um Cliente.';
+                              }
+                              return null;
+                            },
+                            value: dropDownValueClientes,
+                            items: itemsClientes,
+                            onChanged: (String? value) {
+                              setState(() {
+                                dropDownValueClientes = value!;
+                              });
+                            },
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              border: UnderlineInputBorder(
+                                borderRadius: BorderRadius.circular(3),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 3),
+                            child: Text(
+                              'Concessionária',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          DropdownButtonFormField(
+                            validator: (value) {
+                              if (value == 'Selecionar') {
+                                return 'Por favor, selecione uma Concessionária.';
+                              }
+                              return null;
+                            },
+                            value: dropDownValueConcessionarias,
+                            items: itemsConcessionaria,
+                            onChanged: (String? value) {
+                              setState(() {
+                                dropDownValueConcessionarias = value!;
+                              });
+                            },
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              border: UnderlineInputBorder(
+                                borderRadius: BorderRadius.circular(3),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Button(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              Navigator.of(context).popUntil(ModalRoute.withName('/home'));
+                            }
+                          },
+                          text: 'Confirmar',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
             );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+          },
+        ),
       ),
     );
   }
