@@ -1,5 +1,7 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fabrica_carros/model/automovel.dart';
-import 'package:fabrica_carros/screens/home.dart';
 import 'package:fabrica_carros/services/cliente_service.dart';
 import 'package:fabrica_carros/services/concessionario_service.dart';
 import 'package:fabrica_carros/widget/button.dart';
@@ -35,10 +37,28 @@ class _VendasScreenState extends State<VendasScreen> {
     };
   }
 
+  late StreamSubscription connectionSub;
+  void checkConnection(List<ConnectivityResult> result) {
+    if (result.contains(ConnectivityResult.none)) {
+      showDialog(context: context, builder: (context) {
+        return const AlertDialog(
+          title: Text('No internet'),
+        );
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _futureVendas = _getVendas();
+    connectionSub = Connectivity().onConnectivityChanged.listen(checkConnection);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    connectionSub.cancel();
   }
 
   @override

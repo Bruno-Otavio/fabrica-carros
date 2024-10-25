@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fabrica_carros/model/alocacao.dart';
 import 'package:fabrica_carros/model/automovel.dart';
 import 'package:fabrica_carros/services/alocacao_service.dart';
@@ -19,9 +22,27 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen> {
   late Future _futureAlocacao;
 
+  late StreamSubscription connectionSub;
+  void checkConnection(List<ConnectivityResult> result) {
+    if (result.contains(ConnectivityResult.none)) {
+      showDialog(context: context, builder: (context) {
+        return const AlertDialog(
+          title: Text('No internet'),
+        );
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    connectionSub = Connectivity().onConnectivityChanged.listen(checkConnection);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    connectionSub.cancel();
   }
 
   @override
